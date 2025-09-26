@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+
+  mqtt-server:
+    build:
+      context: ./mqtt-server
+    container_name: mqtt-server
+
+  home-lighting-system:
+    build:
+      context: ./home-lighting-system
+    container_name: home-lighting-system
+      
+  mqtt-broker:
+    build:
+      context: ./mqtt-broker
+    container_name: mqtt-broker
+
+  node-red-system:
+    image: nodered/node-red:latest
+    container_name: node-red-system
+    ports:
+      - "1880:1880"
+    volumes:
+      - ./node-red-system/flows.json:/data/flows.json
+      - ./node-red-system/package.json:/data/package.json
+      - node_red_system_data:/data
+
+volumes:
+  node_red_system_data:
+  

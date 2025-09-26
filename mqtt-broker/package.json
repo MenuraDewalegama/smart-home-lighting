@@ -1,0 +1,16 @@
+{
+  "name": "mqtt-broker",
+  "version": "1.0.0",
+  "main": "broker.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "mqtt": "^5.14.0",
+    "redis": "^5.8.2"
+  }
+}

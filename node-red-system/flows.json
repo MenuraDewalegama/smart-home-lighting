@@ -1,0 +1,160 @@
+[
+    {
+        "id": "a1f1ecb8e6c7e0a9",
+        "type": "tab",
+        "label": "Smart Home Manual Control",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "21b79b8ad9b3e12c",
+        "type": "inject",
+        "z": "a1f1ecb8e6c7e0a9",
+        "name": "Light ON",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "on",
+        "payloadType": "str",
+        "x": 110,
+        "y": 80,
+        "wires": [
+            [
+                "d204b4c75e0e7c71"
+            ]
+        ]
+    },
+    {
+        "id": "e5c519267b684a11",
+        "type": "inject",
+        "z": "a1f1ecb8e6c7e0a9",
+        "name": "Light OFF",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "off",
+        "payloadType": "str",
+        "x": 110,
+        "y": 140,
+        "wires": [
+            [
+                "d204b4c75e0e7c71"
+            ]
+        ]
+    },
+    {
+        "id": "d204b4c75e0e7c71",
+        "type": "function",
+        "z": "a1f1ecb8e6c7e0a9",
+        "name": "Set MQTT Light Topic",
+        "func": "msg.topic = \"smarthome/rooms/livingroom/lights/main/command\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 110,
+        "wires": [
+            [
+                "7f6508703959e8e1"
+            ]
+        ]
+    },
+    {
+        "id": "a1e387df28e618e7",
+        "type": "inject",
+        "z": "a1f1ecb8e6c7e0a9",
+        "name": "Motion Detected",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "active",
+        "payloadType": "str",
+        "x": 130,
+        "y": 220,
+        "wires": [
+            [
+                "b6715e3d60b8ad1a"
+            ]
+        ]
+    },
+    {
+        "id": "b6715e3d60b8ad1a",
+        "type": "function",
+        "z": "a1f1ecb8e6c7e0a9",
+        "name": "Set MQTT Motion Topic",
+        "func": "msg.topic = \"smarthome/rooms/livingroom/sensors/motion/state\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 220,
+        "wires": [
+            [
+                "7f6508703959e8e1"
+            ]
+        ]
+    },
+    {
+        "id": "7f6508703959e8e1",
+        "type": "mqtt out",
+        "z": "a1f1ecb8e6c7e0a9",
+        "name": "MQTT Publish",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "f19dbd97.6fd9d",
+        "x": 590,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "f19dbd97.6fd9d",
+        "type": "mqtt-broker",
+        "name": "HiveMQ",
+        "broker": "broker.hivemq.com",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    }
+]
