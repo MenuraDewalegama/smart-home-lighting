@@ -31,7 +31,9 @@ services:
     build:
       context: ./mqtt-db-server
     container_name: mqtt-db-server
-    
+    ports:
+      - "3000:3000"
+
 volumes:
   node_red_system_data:
   
