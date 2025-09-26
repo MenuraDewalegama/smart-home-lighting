@@ -27,6 +27,11 @@ services:
       - ./node-red-system/package.json:/data/package.json
       - node_red_system_data:/data
 
+  mqtt--db-server:
+    build:
+      context: ./mqtt-db-server
+    container_name: mqtt-db-server
+    
 volumes:
   node_red_system_data:
   
