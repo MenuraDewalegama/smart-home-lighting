@@ -43,5 +43,5 @@ jobs:
       run: |
         ssh -i ec2_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
           echo "Connected to EC2"
-          sudo docke images
+          sudo docker images
         EOF
