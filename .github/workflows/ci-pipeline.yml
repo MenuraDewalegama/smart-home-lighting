@@ -7,27 +7,6 @@ on:
   workflow_dispatch:
   workflow_call:
 
-  # Automatically on pushes to main branch
-  push:
-    branches:
-      - main
-    paths:
-      - 'home-lighting-system/**'
-      - 'mqtt-broker/**'
-      - 'mqtt-db-server/**'
-      - 'node-red-system/**'
-      - '.github/workflows/**'
-
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'home-lighting-system/**'
-      - 'mqtt-broker/**'
-      - 'mqtt-db-server/**'
-      - 'node-red-system/**'
-      - '.github/workflows/**'
-
 # Define global environment variables that can be used across jobs
 env:
   IMAGE_TAG: ${{ github.sha }}-${{ github.run_id }}
@@ -50,5 +29,8 @@ jobs:
         ssh -i ec2_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
           echo "Connected to EC2"
           sudo docker images
+          mkdir CI && cd CI
+          git clone https://github.com/MenuraDewalegama/smart-home-lighting.git && cd smart-home-lighting 
           sudo docker-compose build
+          cd && rm -rf CI
         EOF
