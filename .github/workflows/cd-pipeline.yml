@@ -1,1 +1,54 @@
-#test
+name: CD - Deploy Images 
+
+# Trigger the workflow on pushes to the 'main' branch
+# You can also add 'pull_request:' to run on PRs
+on:
+  # Manual trigger
+  workflow_dispatch:
+  workflow_call:
+
+  # Automatically on pushes to main branch
+  push:
+    branches:
+      - main
+    paths:
+      - 'home-lighting-system/**'
+      - 'mqtt-broker/**'
+      - 'mqtt-db-server/**'
+      - 'node-red-system/**'
+      - '.github/workflows/**'
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'home-lighting-system/**'
+      - 'mqtt-broker/**'
+      - 'mqtt-db-server/**'
+      - 'node-red-system/**'
+      - '.github/workflows/**'
+
+# Define global environment variables that can be used across jobs
+env:
+  IMAGE_TAG: ${{ github.sha }}-${{ github.run_id }}
+
+jobs:
+  build_images:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup SSH key
+      run: |
+        echo "${{ secrets.EC2_SSH_KEY }}" > ec2_key.pem
+        chmod 600 ec2_key.pem
+
+    - name: Connect to EC2 and buil images
+      run: |
+        ssh -i ec2_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          echo "Connected to EC2"
+          sudo docker images
+          sudo docker-compose up -d
+        EOF

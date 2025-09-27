@@ -11,16 +11,22 @@ on:
   push:
     branches:
       - main
-    paths: # Only trigger if changes are in backend directories
-      - 'backend/**'
-      - '.github/workflows/backend_ci.yml' # Trigger if this workflow file changes
+    paths:
+      - 'home-lighting-system/**'
+      - 'mqtt-broker/**'
+      - 'mqtt-db-server/**'
+      - 'node-red-system/**'
+      - '.github/workflows/**'
 
   pull_request:
     branches:
       - main
     paths:
-      - 'backend/**'
-      - '.github/workflows/backend_ci.yml'
+      - 'home-lighting-system/**'
+      - 'mqtt-broker/**'
+      - 'mqtt-db-server/**'
+      - 'node-red-system/**'
+      - '.github/workflows/**'
 
 # Define global environment variables that can be used across jobs
 env:
@@ -39,9 +45,10 @@ jobs:
         echo "${{ secrets.EC2_SSH_KEY }}" > ec2_key.pem
         chmod 600 ec2_key.pem
 
-    - name: Connect and deploy to EC2
+    - name: Connect to EC2 and buil images
       run: |
         ssh -i ec2_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
           echo "Connected to EC2"
           sudo docker images
+          sudo docker-compose build
         EOF
