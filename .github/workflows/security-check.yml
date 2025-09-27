@@ -54,6 +54,7 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME }}/smart-home-lighting_mqtt-server:latest
 
   docker_scout_analysis:
+    needs: build_images
     runs-on: ubuntu-latest
     steps:
         - name: Checkout repository
