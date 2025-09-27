@@ -1,15 +1,15 @@
-name: Build and Push Docker Image
+name: Build Docker Image and Docker Scout Analysis
 
 on:
   push:
     branches:
-      - main  # Or any branch you'd like
+      - main  
   pull_request:
     branches:
-      - main  # Or any branch you'd like
+      - main 
 
 jobs:
-  build:
+  build_images:
     runs-on: ubuntu-latest
     
     steps:
@@ -33,24 +33,99 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build the Docker image and push
+      - name: Build the home-lighting-system Docker image and push
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/smart-home-lighting_home-lighting-system:latest ./home-lighting-system
           docker push ${{ secrets.DOCKER_USERNAME }}/smart-home-lighting_home-lighting-system:latest
 
-      - name: Install Docker Scout CLI
+      - name: Build the mqtt-broker Docker image and push
         run: |
-          curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s --
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/smart-home-lighting_mqtt-broker:latest ./mqtt-broker
+          docker push ${{ secrets.DOCKER_USERNAME }}/smart-home-lighting_mqtt-broker:latest
 
-      - name: Run Docker Scout
+      - name: Build the mqtt-db-server Docker image and push
         run: |
-          docker scout cves ${{ secrets.DOCKER_USERNAME }}/smart-home-lighting_home-lighting-system:latest > vulnerabilities_report_product.json
-          mkdir -p reports
-          mv vulnerabilities_report_product.json reports/
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/smart-home-lighting_mqtt-db-server:latest ./mqtt-db-server
+          docker push ${{ secrets.DOCKER_USERNAME }}/smart-home-lighting_mqtt-db-server:latest
 
-      - name: Upload Product Docker Scout JSON Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: vulnerabilities_report_product.json
-          path: reports/vulnerabilities_report_product.json
+      - name: Build the mqtt-server Docker image and push
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/smart-home-lighting_mqtt-server:latest ./mqtt-server
+          docker push ${{ secrets.DOCKER_USERNAME }}/smart-home-lighting_mqtt-server:latest
+
+  docker_scout_analysis:
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
           
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v3
+
+        - name: Cache Docker layers
+          uses: actions/cache@v3
+          with:
+            path: /tmp/.buildx-cache
+            key: ${{ runner.os }}-buildx-${{ github.sha }}
+            restore-keys: |
+              ${{ runner.os }}-buildx-
+
+        - name: Log in to DockerHub
+          uses: docker/login-action@v3
+          with:
+            username: ${{ secrets.DOCKER_USERNAME }}
+            password: ${{ secrets.DOCKER_PASSWORD }}
+        
+        - name: Install Docker Scout CLI
+          run: |
+            curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s --
+
+        - name: Run Docker Scout for home-lighting-system
+          run: |
+            docker scout cves ${{ secrets.DOCKER_USERNAME }}/smart-home-lighting_home-lighting-system:latest > vulnerabilities_report_home_lighting_system.json
+            mkdir -p reports
+            mv vulnerabilities_report_home_lighting_system.json reports/
+
+        - name: Upload home-lighting-system Docker Scout JSON Report
+          uses: actions/upload-artifact@v4
+          with:
+            name: vulnerabilities_report_home_lighting_system.json
+            path: reports/vulnerabilities_report_home_lighting_system.json
+        
+        - name: Run Docker Scout for mqtt-broker
+          run: |
+            docker scout cves ${{ secrets.DOCKER_USERNAME }}/smart-home-lighting_mqtt-broker:latest > vulnerabilities_report_mqtt_broker.json
+            mkdir -p reports
+            mv vulnerabilities_report_mqtt_broker.json reports/
+
+        - name: Upload mqtt-broker Docker Scout JSON Report
+          uses: actions/upload-artifact@v4
+          with:
+            name: vulnerabilities_report_mqtt_broker.json
+            path: reports/vulnerabilities_report_mqtt_broker.json
+        
+        - name: Run Docker Scout for mqtt-db-server
+          run: |
+            docker scout cves ${{ secrets.DOCKER_USERNAME }}/smart-home-lighting_mqtt-db-server:latest > vulnerabilities_report_mqtt_db_server.json
+            mkdir -p reports
+            mv vulnerabilities_report_mqtt_db_server.json reports/
+
+        - name: Upload mqtt-db-server Docker Scout JSON Report
+          uses: actions/upload-artifact@v4
+          with:
+            name: vulnerabilities_report_mqtt_db_server.json
+            path: reports/vulnerabilities_report_mqtt_db_server.json
+        
+        - name: Run Docker Scout for mqtt-server
+          run: |
+            docker scout cves ${{ secrets.DOCKER_USERNAME }}/smart-home-lighting_mqtt-server:latest > vulnerabilities_report_mqtt_server.json
+            mkdir -p reports
+            mv vulnerabilities_report_mqtt_server.json reports/
+
+        - name: Upload mqtt-server Docker Scout JSON Report
+          uses: actions/upload-artifact@v4
+          with:
+            name: vulnerabilities_report_mqtt_server.json
+            path: reports/vulnerabilities_report_mqtt_server.json
+
+            
