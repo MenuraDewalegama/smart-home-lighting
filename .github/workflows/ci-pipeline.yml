@@ -32,4 +32,8 @@ jobs:
           mkdir CI && cd CI
           git clone https://github.com/MenuraDewalegama/smart-home-lighting.git && cd smart-home-lighting 
           sudo docker-compose build
+          sudo docker tag smart-home-lighting_mqtt-db-server:latest menuradewalegama/smart-home-lighting_mqtt-db-server:latest
+          sudo docker tag smart-home-lighting_mqtt-broker:latest menuradewalegama/smart-home-lighting_mqtt-broker:latest
+          sudo docker tag smart-home-lighting_home-lighting-system:latest menuradewalegama/smart-home-lighting_home-lighting-system:latest
+          sudo docker tag smart-home-lighting_mqtt-server:latest menuradewalegama/smart-home-lighting_mqtt-server:latest
         EOF

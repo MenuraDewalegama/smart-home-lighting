@@ -1,0 +1,52 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main  # Or any branch you'd like
+  pull_request:
+    branches:
+      - main  # Or any branch you'd like
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build the Docker image and push
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/smart-home-lighting_home-lighting-system:latest ./home-lighting-system
+          docker push ${{ secrets.DOCKER_USERNAME }}/smart-home-lighting_home-lighting-system:latest
+
+      - name: Run Docker Scout
+        run: |
+          docker scout cves ${{ secrets.DOCKER_USERNAME }}/smart-home-lighting_home-lighting-system:latest > vulnerabilities_report_product.json
+          mkdir -p reports
+          mv vulnerabilities_report_product.json reports/
+
+      - name: Upload Product Docker Scout JSON Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: vulnerabilities_report_product.json
+          path: reports/vulnerabilities_report_product.json
+          
