@@ -32,5 +32,4 @@ jobs:
           mkdir CI && cd CI
           git clone https://github.com/MenuraDewalegama/smart-home-lighting.git && cd smart-home-lighting 
           sudo docker-compose build
-          cd && rm -rf CI
         EOF
