@@ -92,6 +92,17 @@ jobs:
           with:
             name: vulnerabilities_report_home_lighting_system.json
             path: reports/vulnerabilities_report_home_lighting_system.json
+
+        - name: Run Docker Scout Recommendations for home-lighting-system
+          run: |
+            docker scout recommendations ${{ secrets.DOCKER_USERNAME }}/smart-home-lighting_home-lighting-system:latest > recommendations_report_home_lighting_system.json
+            mv recommendations_report_home_lighting_system.json reports/
+
+        - name: Upload home-lighting-system Docker Scout JSON Report
+          uses: actions/upload-artifact@v4
+          with:
+            name: recommendations_report_home_lighting_system.json
+            path: reports/recommendations_report_home_lighting_system.json
         
         - name: Run Docker Scout for mqtt-broker
           run: |
@@ -105,6 +116,17 @@ jobs:
             name: vulnerabilities_report_mqtt_broker.json
             path: reports/vulnerabilities_report_mqtt_broker.json
         
+        - name: Run Docker Scout Recommendations for mqtt-broker
+          run: |
+            docker scout recommendations ${{ secrets.DOCKER_USERNAME }}/smart-home-lighting_mqtt-broker:latest > recommendations_report_mqtt_broker.json
+            mv recommendations_report_mqtt_broker.json reports/
+
+        - name: Upload mqtt-broker Docker Scout JSON Report
+          uses: actions/upload-artifact@v4
+          with:
+            name: recommendations_report_mqtt_broker.json
+            path: reports/recommendations_report_mqtt_broker.json
+
         - name: Run Docker Scout for mqtt-db-server
           run: |
             docker scout cves ${{ secrets.DOCKER_USERNAME }}/smart-home-lighting_mqtt-db-server:latest > vulnerabilities_report_mqtt_db_server.json
@@ -116,6 +138,17 @@ jobs:
           with:
             name: vulnerabilities_report_mqtt_db_server.json
             path: reports/vulnerabilities_report_mqtt_db_server.json
+
+        - name: Run Docker Scout Recommendations for mqtt-db-server
+          run: |
+            docker scout recommendations ${{ secrets.DOCKER_USERNAME }}/smart-home-lighting_mqtt-db-server:latest > recommendations_report_mqtt_db_server.json
+            mv recommendations_report_mqtt_db_server.json reports/
+
+        - name: Upload mqtt-db-server Docker Scout JSON Report
+          uses: actions/upload-artifact@v4
+          with:
+            name: recommendations_report_mqtt_db_server.json
+            path: reports/recommendations_report_mqtt_db_server.json
         
         - name: Run Docker Scout for mqtt-server
           run: |
@@ -128,5 +161,16 @@ jobs:
           with:
             name: vulnerabilities_report_mqtt_server.json
             path: reports/vulnerabilities_report_mqtt_server.json
+
+        - name: Run Docker Scout Recommendations for mqtt-server
+          run: |
+            docker scout recommendations ${{ secrets.DOCKER_USERNAME }}/smart-home-lighting_mqtt-server:latest > recommendations_report_mqtt_server.json
+            mv recommendations_report_mqtt_server.json reports/
+
+        - name: Upload mqtt-server Docker Scout JSON Report
+          uses: actions/upload-artifact@v4
+          with:
+            name: recommendations_report_mqtt_server.json
+            path: reports/recommendations_report_mqtt_server.json
 
             
