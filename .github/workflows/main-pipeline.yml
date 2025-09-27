@@ -1,0 +1,26 @@
+name: Main CI/CD Pipeline
+
+on:
+  # Manual trigger
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'home-lighting-system/**'
+      - 'mqtt-broker/**'
+      - 'mqtt-db-server/**'
+      - 'node-red-system/**'
+      - '.github/workflows/**'
+
+jobs:
+  run_ci_pipeline:
+    name: Run CI Pipeline
+    uses: ./.github/workflows/ci-pipeline.yml
+    secrets: inherit
+
+  # run_cd_pipeline:
+  #   name: Run CD Pipeline
+  #   needs: [run_ci_pipeline]
+  #   uses: ./.github/workflows/cd-pipeline.yml
+  #   secrets: inherit
